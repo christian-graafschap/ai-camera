@@ -1,0 +1,12 @@
+# Virtualenv (aan te maken met setup.bat)
+.venv/
+
+# Ultralytics-uitvoer
+runs/
+
+# Modelgewichten (Ultralytics downloadt yolo26*.pt automatisch bij eerste gebruik)
+*.pt
+
+# Python-cache
+__pycache__/
+*.pyc
