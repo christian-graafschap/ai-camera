@@ -4,27 +4,32 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-A thin wrapper around the Ultralytics YOLO CLI that runs real-time object detection on the local webcam. There is no custom Python source — the entire project is a batch launcher that shells out to `yolo.exe` from a vendored virtualenv.
+Real-time object detection on the local webcam using Ultralytics YOLO, shown in a fullscreen Tkinter dashboard. Code comments, docstrings, UI text and docs are in Dutch.
 
 Key pieces:
-- `start-camera.bat` — entry point. Runs `.\.venv\Scripts\yolo.exe predict model=yolo26n.pt source=0 show=True` (webcam index 0, live preview window).
-- `yolo26n.pt` — the pretrained Ultralytics YOLO26-nano weights used for prediction.
-- `.venv\` — Python 3.11.5 virtualenv with `ultralytics` installed; `yolo.exe` is the Ultralytics CLI shim.
-- `runs\detect\predict*\` — Ultralytics' default output directory. A new `predict-N` folder is created per run.
+- `setup.bat` — creates `.venv` (prefers `py -3.11`, falls back to `python`) and installs `ultralytics` and `pygrabber`.
+- `start-camera.bat` — entry point. Runs `.\.venv\Scripts\python.exe dashboard.py model=yolo26n.pt source=0`.
+- `dashboard.py` — fullscreen dashboard: infographic on the left, live camera feed with YOLO detections top-right, captured stdout/stderr and Ultralytics log output bottom-right. YOLO runs in a background thread (`model.predict(..., stream=True)`) and hands frames/text to the Tk main loop via queues. Esc closes, F11 toggles fullscreen.
+- `cameras.py` — lists available webcams with their `source=` index, name (via `pygrabber`/DirectShow) and resolution.
+- `AI-camera_infographic.png` — image shown in the left panel of the dashboard.
+
+Not in git (see `.gitignore`): `.venv/`, `runs/`, and `*.pt` weights. Ultralytics downloads official weights like `yolo26n.pt` automatically on first use.
 
 ## Running
 
 ```bat
+setup.bat
 start-camera.bat
 ```
 
-To change behavior, edit the single `yolo predict` command in `start-camera.bat`. Common knobs (Ultralytics CLI syntax, `key=value`):
-- `source=0` → webcam index; use a file path or RTSP URL for other inputs.
-- `model=yolo26n.pt` → swap weights (e.g. `yolo26s.pt`, custom-trained `.pt`).
-- `conf=0.25`, `iou=0.7`, `imgsz=640`, `device=0` (GPU) / `device=cpu`, `save=True` to persist annotated frames to `runs\detect\predict-N\`.
+`dashboard.py` takes Ultralytics-style `key=value` arguments; `lees_argumenten()` converts values to int/float/bool and passes everything except `model`, `source` and `show` (dropped, the dashboard does its own display) straight to `model.predict()`. Common knobs:
+- `source=0` → webcam index (find it with `cameras.py`); a file path or RTSP URL also works.
+- `model=yolo26n.pt` → swap weights (e.g. `yolo26s.pt`, `yolo26x.pt`, custom-trained `.pt`).
+- `conf=0.25`, `iou=0.7`, `imgsz=640`, `device=0` (GPU) / `device=cpu`.
 
 ## Notes for editing
 
-- There is no build, lint, or test step — nothing to run beyond the batch file.
-- The venv's Python is `C:\temp\AI-Camera\.venv\Scripts\python.exe` (3.11.5). Use `.\.venv\Scripts\pip install ...` to add packages.
-- If adding Python scripts, invoke them via the venv's `python.exe` so Ultralytics resolves correctly.
+- There is no build, lint, or test step.
+- Windows only (`.bat` launchers, DirectShow camera names). `.gitattributes` forces CRLF for `.bat` files — keep it that way, batch labels/`goto` can break with LF.
+- Use the venv's Python: `.\.venv\Scripts\python.exe`. Add packages with `.\.venv\Scripts\python.exe -m pip install ...` and also add them to `setup.bat`.
+- The venv has the CPU build of torch; GPU use needs a CUDA build of torch from pytorch.org.

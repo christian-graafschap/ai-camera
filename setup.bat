@@ -38,7 +38,7 @@ if errorlevel 1 goto :fout
 
 echo Packages installeren ...
 rem ultralytics trekt torch, torchvision, opencv-python, numpy en pillow mee
-rem pygrabber is nodig voor camera's.py (lijst van DirectShow-camera's)
+rem pygrabber is nodig voor cameras.py (lijst van DirectShow-camera's)
 .\.venv\Scripts\python.exe -m pip install ultralytics pygrabber
 if errorlevel 1 goto :fout
 

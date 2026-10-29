@@ -50,10 +50,10 @@ Pas de regel in `start-camera.bat` aan. De instellingen gebruiken de Ultralytics
 | `imgsz=640` | Beeldgrootte waarmee het model rekent. |
 | `device=cpu` / `device=0` | Rekenen op de CPU of op de (NVIDIA-)GPU. |
 
-### Welke camera is welk nummer?
+### Welk cameranummer hoort bij welke camera?
 
 ```bat
-.\.venv\Scripts\python.exe "camera's.py"
+.\.venv\Scripts\python.exe cameras.py
 ```
 
 Dit toont alle beschikbare camera's met hun `source`-nummer, naam en resolutie.
@@ -65,5 +65,5 @@ Dit toont alle beschikbare camera's met hun `source`-nummer, naam en resolutie.
 | `setup.bat` | Maakt de venv aan en installeert de packages |
 | `start-camera.bat` | Start het dashboard |
 | `dashboard.py` | Het dashboard (Tkinter + OpenCV + Ultralytics) |
-| `camera's.py` | Laat de beschikbare camera's zien |
+| `cameras.py` | Laat de beschikbare camera's zien |
 | `AI-camera_infographic.png` | Infographic die in het dashboard wordt getoond |
